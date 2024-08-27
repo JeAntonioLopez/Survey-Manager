@@ -1,9 +1,9 @@
 import { Router } from 'express';
-import {  getSurveyController, createUserController, createSurveyController, createQuestionController, createAlternativeController } from './survey.controller';
+import {  createUserController, createSurveyController, createQuestionController, createAlternativeController } from './survey.controller';
 
 export const surveyRoutes: Router = Router();
 
-surveyRoutes.get('/:id', getSurveyController);
+//surveyRoutes.get('/:id', );
 surveyRoutes.post('/user', createUserController);
 surveyRoutes.post('/', createSurveyController);
 surveyRoutes.post('/question', createQuestionController);

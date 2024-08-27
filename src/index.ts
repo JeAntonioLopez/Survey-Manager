@@ -3,7 +3,7 @@ import {surveyRoutes} from './modules/survey/survey.routes';
 import morgan from 'morgan';
 import cors from 'cors';
 import "reflect-metadata"
-import { AppDataSource } from './db';
+import { AppDataSource } from './utils/typeormConfig';
 import { responseRoutes } from './modules/response/response.routes';
 
 
