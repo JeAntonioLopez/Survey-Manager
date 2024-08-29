@@ -1,8 +1,7 @@
 import { Request, Response } from 'express';
-import { createAlternative, createQuestion, createSurvey, getAllSurveys, getUserSurveys, getUserUnasweredSurveys } from './survey.service';
+import { createAlternative, createQuestion, createSurvey, getAllSurveys, getUserSurveys, getUserUnasweredSurveys, updateSurvey } from './survey.service';
 import { HttpError } from '../../utils/httpErrorHandler';
-
-
+import { UpdateSurveyDto } from '../../dto/survey.module.dto';
 
 
 export const createSurveyController = async (req: Request, res: Response) => {
@@ -11,7 +10,34 @@ export const createSurveyController = async (req: Request, res: Response) => {
         if (email === undefined || description === undefined || name === undefined) {
             return res.status(400).json({ message: 'Invalid arguments' });
         }
-        const result = await createSurvey(email, description, name);
+        const result = await createSurvey(email, name, description);
+        return res.status(200).json({ result });
+    } catch (error) {
+        if (error instanceof HttpError) {
+            return res.status(error.statusCode).json({ message: error.message });
+        }
+        res.status(500).json({ message: (error as Error).message });
+    }
+};
+
+export const updateSurveyController = async (req: Request, res: Response) => {
+    try {
+        const { userId, surveyId, name, description, released, closingDate } = req.body;
+        if (userId === undefined || surveyId === undefined) {
+            return res.status(400).json({ message: 'Invalid arguments' });
+        }
+        if (name === undefined && description === undefined && released === undefined && closingDate === undefined) {
+            return res.status(400).json({ message: 'Invalid arguments' });
+        }
+        const updateSurveyDTO: UpdateSurveyDto = {
+            userId: userId,
+            surveyId: surveyId,
+            name: name,
+            description: description,
+            released: released,
+            closingDate: closingDate
+        };
+        const result = await updateSurvey(updateSurveyDTO);
         return res.status(200).json({ result });
     } catch (error) {
         if (error instanceof HttpError) {
@@ -60,7 +86,7 @@ export const getUserSurveysController = async (req: Request, res: Response) => {
             return res.status(400).json({ message: 'Invalid arguments' });
         }
         const result = await getUserSurveys(userId);
-        return res.status(200).json( result );
+        return res.status(200).json(result);
     } catch (error) {
         if (error instanceof HttpError) {
             return res.status(error.statusCode).json({ message: error.message });
@@ -72,7 +98,7 @@ export const getUserSurveysController = async (req: Request, res: Response) => {
 export const getAllSurveysController = async (_req: Request, res: Response) => {
     try {
         const result = await getAllSurveys();
-        return res.status(200).json( result );
+        return res.status(200).json(result);
     } catch (error) {
         if (error instanceof HttpError) {
             return res.status(error.statusCode).json({ message: error.message });
@@ -89,7 +115,7 @@ export const getUserUnasweredSurveysController = async (req: Request, res: Respo
             return res.status(400).json({ message: 'Invalid arguments' });
         }
         const result = await getUserUnasweredSurveys(userId);
-        return res.status(200).json( result );
+        return res.status(200).json(result);
     } catch (error) {
         if (error instanceof HttpError) {
             return res.status(error.statusCode).json({ message: error.message });

@@ -1,3 +1,4 @@
+import { UpdateSurveyDto } from "../../dto/survey.module.dto";
 import { Alternative } from "../../entities/alternative.entity";
 import { Question } from "../../entities/question.entity";
 import { Survey } from "../../entities/survey.entity";
@@ -7,9 +8,9 @@ import { HttpError } from "../../utils/httpErrorHandler";
 
 
 
-export const createSurvey = async (email: string, description: string, name: string) => {
+export const createSurvey = async (userId: string, name: string, description: string) => {
     // search user by email
-    const user = await User.findOne({ where: { email: email } });
+    const user = await User.findOne({ where: { id: userId } });
     if (!user) {
         throw new HttpError('User not found', 404);
     }
@@ -22,6 +23,44 @@ export const createSurvey = async (email: string, description: string, name: str
     await survey.save();
     return ({ survey: survey });
 };
+
+
+export const updateSurvey = async (updateSurveyDto: UpdateSurveyDto) => {
+    const { userId, surveyId, name, description, released, closingDate } = updateSurveyDto;
+
+    const user = await User.findOne({ where: { id: userId }, relations: ['surveys'] });
+    if (!user) {
+        throw new HttpError('User not found', 404);
+    }
+
+    const survey = await Survey.findOne({ where: { id: surveyId } });
+    if (!survey) {
+        throw new HttpError('Survey not found', 404);
+    }
+
+    // Update fields
+    if (name !== undefined) {
+        survey.name = name;
+    }
+    if (description !== undefined) {
+        survey.description = description;
+    }
+    if (released !== undefined) {
+        survey.released = released;
+    }
+
+    if (closingDate !== undefined) {
+        // Assume the date is coming in `dd/mm/yyyy` format and convert it
+        const [day, month, year] = closingDate.split('/');
+        const formattedClosingDate = new Date(`${year}-${month}-${day}T00:00:00`);
+        console.log(formattedClosingDate); // Optional: For debugging
+        survey.closingDate = formattedClosingDate;
+    }
+
+    await survey.save();
+    return { survey };
+};
+
 
 
 export const createQuestion = async (surveyId: string, text: string) => {

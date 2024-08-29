@@ -7,7 +7,7 @@ export class Survey extends BaseEntity {
     @PrimaryGeneratedColumn() // Serial 
     id: string;
 
-    @Column({ nullable: false })
+    @Column({unique: true, nullable: false })
     name: string;
 
     @Column()
@@ -18,6 +18,9 @@ export class Survey extends BaseEntity {
 
     @CreateDateColumn()
     createdAt: Date;
+
+    @Column({ nullable: true, default: null })
+    closingDate: Date;    
 
     @ManyToOne(() => User, (user) => user.surveys, { nullable: false, onDelete: "CASCADE" })
     user: User;
