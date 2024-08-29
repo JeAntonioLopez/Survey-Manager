@@ -83,3 +83,14 @@ export const sendResponseSurvey = async (userId: string, surveyId: string, selec
     return surveyResponse;
 
 };
+
+
+export const getUserSurveyResponses = async (userId: string) => {
+    // search user by id
+    const user = await User.findOne({ where: { id: userId }, relations: ['responses','responses.answers','responses.answers.alternative','responses.answers.question'] });
+    if (!user) {
+        throw new HttpError('User not found', 404);
+    }
+
+    return ({ surveys: user.responses });
+};
