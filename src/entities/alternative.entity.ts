@@ -5,7 +5,7 @@ import { Answer } from './answer';
 @Entity()
 export class Alternative extends BaseEntity {
     @PrimaryGeneratedColumn() // Serial 
-    id: string;
+    id: number;
 
     @Column({ nullable: false })
     value: string;

@@ -6,7 +6,7 @@ import { Answer } from './answer';
 @Entity()
 export class Question extends BaseEntity {
     @PrimaryGeneratedColumn() // Serial 
-    id: string;
+    id: number;
 
     @Column({ nullable: false })
     text: string;

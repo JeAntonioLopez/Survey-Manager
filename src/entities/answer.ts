@@ -20,7 +20,7 @@ import { Alternative } from './alternative.entity';
 @Entity()
 export class Answer extends BaseEntity {
     @PrimaryGeneratedColumn() // Serial
-    id: string;
+    id: number;
 
     @ManyToOne(() => SurveyResponse, (response) => response.answers, { nullable: false, onDelete: "CASCADE" })
     surveyResponse: SurveyResponse;

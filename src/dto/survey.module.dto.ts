@@ -1,11 +1,11 @@
-import { IsOptional, IsString, IsBoolean, IsDateString } from 'class-validator';
+import { IsOptional, IsString, IsBoolean, IsDateString, IsNumber } from 'class-validator';
 
 export class UpdateSurveyDto {
-    @IsString()
-    userId: string;
+    @IsNumber()
+    userId: number;
 
-    @IsString()
-    surveyId: string;
+    @IsNumber()
+    surveyId: number;
 
     @IsOptional()
     @IsString()
@@ -21,5 +21,5 @@ export class UpdateSurveyDto {
 
     @IsOptional()
     @IsDateString()
-    closingDate?: string; /// string to use the split function
+    closingDate?: string; /// string to use the .split method
 }

@@ -5,7 +5,7 @@ import { Question } from './question.entity';
 @Entity()
 export class Survey extends BaseEntity {
     @PrimaryGeneratedColumn() // Serial 
-    id: string;
+    id: number;
 
     @Column({unique: true, nullable: false })
     name: string;

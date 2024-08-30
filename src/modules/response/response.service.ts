@@ -6,7 +6,7 @@ import { HttpError } from "../../utils/httpErrorHandler";
 
 
 
-export const sendResponseSurvey = async (userId: string, surveyId: string, selectedAlternativesIds: string[], allowIncompleteResponses: boolean) => {
+export const sendResponseSurvey = async (userId: number, surveyId: number, selectedAlternativesIds: string[], allowIncompleteResponses: boolean) => {
     // search the user
     const user = await User.findOne({ where: { id: userId } });
     if (!user) {
@@ -16,18 +16,30 @@ export const sendResponseSurvey = async (userId: string, surveyId: string, selec
     /// search the survey
     const survey = await Survey.findOne({ where: { id: surveyId }, relations: ['questions', 'questions.alternatives'] });
 
-    // Verificar si el usuario ya tiene una respuesta para la misma encuesta
+    if (!survey) {
+        throw new HttpError("Survey not found", 404);
+    }
+
+    // check if the survey has been responded before by the user
     const existingSurveyResponse = await SurveyResponse.findOne({ where: { user: { id: userId }, survey: { id: surveyId } } });
     if (existingSurveyResponse) {
         throw new HttpError("User has already responded to this survey", 400);
     }
 
-    if (!survey) {
-        throw new HttpError("Survey not found", 404);
+    // check if the survey is released
+    if (!survey.released) {
+        throw new HttpError("The survey hasnt been released", 400);
     }
+
+    // check if the survey its been answered before closing date
+    if (new Date(survey.closingDate) < new Date()) {
+        throw new HttpError("The survey is closed", 400);
+    }
+
     console.log("\nQuestions:");
     console.log(survey.questions);
     console.log(selectedAlternativesIds);
+
     /// check that the amount of questions for the survey matches the lenght of the selectedAlternativesIds array
     if (survey.questions.length != selectedAlternativesIds.length) {
         throw new HttpError("Invalid number of questions for this survey", 400);
@@ -85,12 +97,76 @@ export const sendResponseSurvey = async (userId: string, surveyId: string, selec
 };
 
 
-export const getUserSurveyResponses = async (userId: string) => {
+export const getUserSurveyResponses = async (userId: number) => {
     // search user by id
-    const user = await User.findOne({ where: { id: userId }, relations: ['responses','responses.answers','responses.survey','responses.answers.alternative','responses.answers.question'] });
+    const user = await User.findOne({ where: { id: userId }, relations: ['responses', 'responses.answers', 'responses.survey', 'responses.answers.alternative', 'responses.answers.question'] });
     if (!user) {
         throw new HttpError('User not found', 404);
     }
 
     return (user);
+};
+
+export const getSurveyResults = async (userId: number, surveyId: number) => {
+    // search user
+    const user = await User.findOne({ where: { id: userId }, relations: ['surveys', 'surveys.questions','surveys.questions.alternatives'] });
+    if (!user) {
+        throw new HttpError('User not found', 404);
+    }
+
+    const survey = user.surveys.find(({ id }) => id === surveyId);
+    if (!survey) {
+        throw new HttpError('Survey not found', 404);
+    }
+
+    const surveyResults: {
+        questionText: string;
+        alternatives: {
+            alternativeText: string;
+            numberOfAnswers: number;
+            percentage: number;
+        }[];
+        totalNumberOfAnswers: number;
+    }[] = [];
+
+    // for each question
+    for (const question of survey.questions) {
+        let totalNumberOfAnswers = 0;
+
+        const alternativesResults = [];
+
+        // count results for each alternative
+        for (const alternative of question.alternatives) {
+            const numberOfAnswers = await Answer.count({
+                where: { alternative: { id: alternative.id } }
+            });
+
+            totalNumberOfAnswers += numberOfAnswers;
+
+            alternativesResults.push({
+                alternativeText: alternative.value,
+                numberOfAnswers,
+                percentage: 0 
+            });
+        }
+
+        // calculate percentage for each alternative
+        alternativesResults.forEach(alternativeResult => {
+            if (totalNumberOfAnswers > 0) {
+                alternativeResult.percentage = (alternativeResult.numberOfAnswers / totalNumberOfAnswers) * 100;
+            } else {
+                alternativeResult.percentage = 0;
+            }
+        });
+
+        // save question results
+        surveyResults.push({
+            questionText: question.text,
+            alternatives: alternativesResults,
+            totalNumberOfAnswers
+        });
+    }
+
+
+    return surveyResults;
 };

@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { createAlternative, createQuestion, createSurvey, getAllSurveys, getUserSurveys, getUserUnasweredSurveys, updateSurvey } from './survey.service';
+import { createAlternative, createQuestion, createSurvey, deleteQuestion, deleteSurvey, getAllSurveys, getUserSurveys, getUserUnasweredSurveys, updateSurvey } from './survey.service';
 import { HttpError } from '../../utils/httpErrorHandler';
 import { UpdateSurveyDto } from '../../dto/survey.module.dto';
 
@@ -11,6 +11,22 @@ export const createSurveyController = async (req: Request, res: Response) => {
             return res.status(400).json({ message: 'Invalid arguments' });
         }
         const result = await createSurvey(email, name, description);
+        return res.status(200).json({ result });
+    } catch (error) {
+        if (error instanceof HttpError) {
+            return res.status(error.statusCode).json({ message: error.message });
+        }
+        res.status(500).json({ message: (error as Error).message });
+    }
+};
+
+export const deleteSurveyController = async (req: Request, res: Response) => {
+    try {
+        const { userId, surveyId }: { userId: number, surveyId: number } = req.body;
+        if (userId === undefined || surveyId === undefined) {
+            return res.status(400).json({ message: 'Invalid arguments' });
+        }
+        const result = await deleteSurvey(userId, surveyId);
         return res.status(200).json({ result });
     } catch (error) {
         if (error instanceof HttpError) {
@@ -55,6 +71,22 @@ export const createQuestionController = async (req: Request, res: Response) => {
         }
         const result = await createQuestion(surveyId, text);
         return res.status(200).json({ result });
+    } catch (error) {
+        if (error instanceof HttpError) {
+            return res.status(error.statusCode).json({ message: error.message });
+        }
+        res.status(500).json({ message: (error as Error).message });
+    }
+};
+
+export const deleteQuestionController = async (req: Request, res: Response) => {
+    try {
+        const { userId, surveyId, questionId } = req.body;
+        if (userId === undefined) {
+            return res.status(400).json({ message: 'Invalid arguments' });
+        }
+        const result = await deleteQuestion(userId, surveyId, questionId);
+        return res.status(200).json(result);
     } catch (error) {
         if (error instanceof HttpError) {
             return res.status(error.statusCode).json({ message: error.message });
