@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { HttpError } from '../../utils/httpErrorHandler';
 import { createUser } from './user.service';
+import { CreateUserDTO } from '../../dto/user.module.dto';
 
 
 export const createUserController = async (req: Request, res: Response) => {
@@ -12,7 +13,8 @@ export const createUserController = async (req: Request, res: Response) => {
         if (password !== repeatedPassword) {
             return res.status(400).json({ message: 'Passwords do not match' });
         }
-        const result = await createUser(email, password);
+        const createUserDTO: CreateUserDTO = { email: email, password: password }
+        const result = await createUser(createUserDTO);
         return res.status(200).json({ result });
     } catch (error) {
         if (error instanceof HttpError) {

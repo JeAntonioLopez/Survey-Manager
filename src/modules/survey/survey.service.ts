@@ -1,4 +1,4 @@
-import { UpdateSurveyDto } from "../../dto/survey.module.dto";
+import { CreateSurveyDTO, UpdateSurveyDto, DeleteSurveyDTO, DeleteQuetionDTO, DeleteAlternativeDTO, CreateQuestionDTO, CreateAlternativeDTO } from '../../dto/survey.module.dto';
 import { Alternative } from "../../entities/alternative.entity";
 import { Question } from '../../entities/question.entity';
 import { Survey } from "../../entities/survey.entity";
@@ -8,8 +8,9 @@ import { HttpError } from "../../utils/httpErrorHandler";
 
 
 
-export const createSurvey = async (userId: number, name: string, description: string) => {
+export const createSurvey = async (createSurveyDTO: CreateSurveyDTO) => {
     // search user by email
+    const { userId, description, name } = createSurveyDTO;
     const user = await User.findOne({ where: { id: userId } });
     if (!user) {
         throw new HttpError('User not found', 404);
@@ -24,7 +25,8 @@ export const createSurvey = async (userId: number, name: string, description: st
     return ({ survey: survey });
 };
 
-export const deleteSurvey = async (userId: number, surveyId: number) => {
+export const deleteSurvey = async (deleteSurveyDTO: DeleteSurveyDTO) => {
+    const { userId, surveyId } = deleteSurveyDTO;
     const user = await User.findOne({ where: { id: userId }, relations: ['surveys'] });
     if (!user) {
         throw new HttpError('User not found', 404);
@@ -44,7 +46,8 @@ export const deleteSurvey = async (userId: number, surveyId: number) => {
     return (updatedUser.surveys);
 };
 
-export const deleteQuestion = async (userId: number, surveyId: number, questionId: number) => {
+export const deleteQuestion = async (deleteQuetionDTO: DeleteQuetionDTO) => {
+    const { userId, surveyId, questionId } = deleteQuetionDTO;
     /*
     SELECT q.*
     FROM question q
@@ -83,7 +86,8 @@ export const deleteQuestion = async (userId: number, surveyId: number, questionI
     return updatedSurvey;
 };
 
-export const deleteAlternative = async (userId: number, surveyId: number, questionId: number, alternativeId: number) => {
+export const deleteAlternative = async (deleteAlternativeDTO: DeleteAlternativeDTO) => {
+    const {userId, surveyId, questionId, alternativeId} = deleteAlternativeDTO
     /*
     SELECT a.*
     FROM alternative a
@@ -165,7 +169,8 @@ export const updateSurvey = async (updateSurveyDto: UpdateSurveyDto) => {
 
 
 
-export const createQuestion = async (surveyId: number, text: string) => {
+export const createQuestion = async (createQuestionDTO: CreateQuestionDTO) => {
+    const {surveyId, text} = createQuestionDTO;
     // search survey by id
     const survey = await Survey.findOne({ where: { id: surveyId } });
     if (!survey) {
@@ -180,7 +185,8 @@ export const createQuestion = async (surveyId: number, text: string) => {
     return ({ question: question });
 };
 
-export const createAlternative = async (questionId: number, value: string) => {
+export const createAlternative = async (createAlternativeDTO: CreateAlternativeDTO) => {
+    const {questionId, value} = createAlternativeDTO;
     // search question by id
     const question = await Question.findOne({ where: { id: questionId } });
     if (!question) {

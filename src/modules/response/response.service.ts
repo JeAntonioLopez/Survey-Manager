@@ -1,3 +1,4 @@
+import { GetUserSurveyResultsDTO, SendResponseSurveyDTO } from "../../dto/response.module.dto";
 import { Answer } from "../../entities/answer";
 import { Survey } from "../../entities/survey.entity";
 import { SurveyResponse } from "../../entities/surveyResponse.entity";
@@ -6,7 +7,8 @@ import { HttpError } from "../../utils/httpErrorHandler";
 
 
 
-export const sendResponseSurvey = async (userId: number, surveyId: number, selectedAlternativesIds: string[], allowIncompleteResponses: boolean) => {
+export const sendResponseSurvey = async (sendResponseSurveyDTO: SendResponseSurveyDTO) => {
+    const { userId, surveyId, selectedAlternativesIds, allowIncompleteResponses } = sendResponseSurveyDTO;
     // search the user
     const user = await User.findOne({ where: { id: userId } });
     if (!user) {
@@ -107,9 +109,10 @@ export const getUserSurveyResponses = async (userId: number) => {
     return (user);
 };
 
-export const getSurveyResults = async (userId: number, surveyId: number) => {
+export const getSurveyResults = async (getUserSurveyResultsDTO: GetUserSurveyResultsDTO) => {
     // search user
-    const user = await User.findOne({ where: { id: userId }, relations: ['surveys', 'surveys.questions','surveys.questions.alternatives'] });
+    const { userId, surveyId } = getUserSurveyResultsDTO;
+    const user = await User.findOne({ where: { id: userId }, relations: ['surveys', 'surveys.questions', 'surveys.questions.alternatives'] });
     if (!user) {
         throw new HttpError('User not found', 404);
     }
@@ -146,7 +149,7 @@ export const getSurveyResults = async (userId: number, surveyId: number) => {
             alternativesResults.push({
                 alternativeText: alternative.value,
                 numberOfAnswers,
-                percentage: 0 
+                percentage: 0
             });
         }
 

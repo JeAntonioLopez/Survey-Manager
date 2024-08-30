@@ -1,16 +1,23 @@
 import { Request, Response } from 'express';
 import { getSurveyResults, getUserSurveyResponses, sendResponseSurvey } from './response.service';
 import { HttpError } from '../../utils/httpErrorHandler';
+import { GetUserSurveyResultsDTO, SendResponseSurveyDTO } from '../../dto/response.module.dto';
 
 
 
 export const sendResponseSurveyController = async (req: Request, res: Response) => {
     try {
-        const { userId, surveyId, selectedAlternatives }: { userId: number; surveyId: number; selectedAlternatives: string[] } = req.body;
-        if (userId === undefined || surveyId === undefined || selectedAlternatives === undefined) {
+        const { userId, surveyId, selectedAlternativesIds }: { userId: number; surveyId: number; selectedAlternativesIds: string[] } = req.body;
+        if (userId === undefined || surveyId === undefined || selectedAlternativesIds === undefined) {
             return res.status(400).json({ message: 'Invalid arguments' });
         }
-        const result = await sendResponseSurvey(userId, surveyId, selectedAlternatives, false);
+        const sendResponseSurveyDTO: SendResponseSurveyDTO = {
+            userId,
+            surveyId,
+            selectedAlternativesIds,
+            allowIncompleteResponses: false,
+        };
+        const result = await sendResponseSurvey(sendResponseSurveyDTO);
         return res.status(200).json({ result });
     } catch (error) {
         if (error instanceof HttpError) {
@@ -27,7 +34,7 @@ export const getUserSurveyResponsesController = async (req: Request, res: Respon
             return res.status(400).json({ message: 'Invalid arguments' });
         }
         const result = await getUserSurveyResponses(userId);
-        return res.status(200).json( result );
+        return res.status(200).json(result);
     } catch (error) {
         if (error instanceof HttpError) {
             return res.status(error.statusCode).json({ message: error.message });
@@ -42,8 +49,9 @@ export const getUserSurveyResultsController = async (req: Request, res: Response
         if (userId === undefined || surveyId === undefined) {
             return res.status(400).json({ message: 'Invalid arguments' });
         }
-        const result = await getSurveyResults(userId, surveyId);
-        return res.status(200).json( result );
+        const getUserSurveyResultsDTO: GetUserSurveyResultsDTO = {userId, surveyId};
+        const result = await getSurveyResults(getUserSurveyResultsDTO);
+        return res.status(200).json(result);
     } catch (error) {
         if (error instanceof HttpError) {
             return res.status(error.statusCode).json({ message: error.message });

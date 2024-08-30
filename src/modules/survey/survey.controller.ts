@@ -1,16 +1,17 @@
 import { Request, Response } from 'express';
 import { createAlternative, createQuestion, createSurvey, deleteAlternative, deleteQuestion, deleteSurvey, getAllSurveys, getUserSurveys, getUserUnasweredSurveys, updateSurvey } from './survey.service';
 import { HttpError } from '../../utils/httpErrorHandler';
-import { UpdateSurveyDto } from '../../dto/survey.module.dto';
+import { CreateAlternativeDTO, CreateQuestionDTO, CreateSurveyDTO, DeleteAlternativeDTO, DeleteQuetionDTO, DeleteSurveyDTO, UpdateSurveyDto } from '../../dto/survey.module.dto';
 
 
 export const createSurveyController = async (req: Request, res: Response) => {
     try {
-        const { email, description, name } = req.body;
-        if (email === undefined || description === undefined || name === undefined) {
+        const { userId, description, name } = req.body;
+        if (userId === undefined || description === undefined || name === undefined) {
             return res.status(400).json({ message: 'Invalid arguments' });
         }
-        const result = await createSurvey(email, name, description);
+        const createSurveyDTO: CreateSurveyDTO = {userId, description, name};
+        const result = await createSurvey(createSurveyDTO);
         return res.status(200).json({ result });
     } catch (error) {
         if (error instanceof HttpError) {
@@ -26,7 +27,8 @@ export const deleteSurveyController = async (req: Request, res: Response) => {
         if (userId === undefined || surveyId === undefined) {
             return res.status(400).json({ message: 'Invalid arguments' });
         }
-        const result = await deleteSurvey(userId, surveyId);
+        const deleteSurveyDTO: DeleteSurveyDTO = {userId, surveyId};
+        const result = await deleteSurvey(deleteSurveyDTO);
         return res.status(200).json({ result });
     } catch (error) {
         if (error instanceof HttpError) {
@@ -69,7 +71,8 @@ export const createQuestionController = async (req: Request, res: Response) => {
         if (surveyId === undefined || text === undefined) {
             return res.status(400).json({ message: 'Invalid arguments' });
         }
-        const result = await createQuestion(surveyId, text);
+        const createQuestionDTO : CreateQuestionDTO = { surveyId, text };
+        const result = await createQuestion(createQuestionDTO);
         return res.status(200).json({ result });
     } catch (error) {
         if (error instanceof HttpError) {
@@ -85,7 +88,8 @@ export const deleteQuestionController = async (req: Request, res: Response) => {
         if (userId === undefined || surveyId === undefined || questionId === undefined) {
             return res.status(400).json({ message: 'Invalid arguments' });
         }
-        const result = await deleteQuestion(userId, surveyId, questionId);
+        const deleteQuestionDTO: DeleteQuetionDTO = {userId,surveyId, questionId};
+        const result = await deleteQuestion(deleteQuestionDTO);
         return res.status(200).json(result);
     } catch (error) {
         if (error instanceof HttpError) {
@@ -101,7 +105,8 @@ export const createAlternativeController = async (req: Request, res: Response) =
         if (questionId === undefined || value === undefined) {
             return res.status(400).json({ message: 'Invalid arguments' });
         }
-        const result = await createAlternative(questionId, value);
+        const createAlternativeDTO: CreateAlternativeDTO = { questionId, value };
+        const result = await createAlternative(createAlternativeDTO);
         return res.status(200).json({ result });
     } catch (error) {
         if (error instanceof HttpError) {
@@ -117,7 +122,8 @@ export const deleteAlternativeController = async (req: Request, res: Response) =
         if (userId === undefined || surveyId === undefined || questionId === undefined || alternativeId === undefined) {
             return res.status(400).json({ message: 'Invalid arguments' });
         }
-        const result = await deleteAlternative(userId, surveyId, questionId, alternativeId);
+        const deleteAlternativeDTO: DeleteAlternativeDTO = {userId,surveyId,questionId,alternativeId}
+        const result = await deleteAlternative(deleteAlternativeDTO);
         return res.status(200).json(result);
     } catch (error) {
         if (error instanceof HttpError) {
