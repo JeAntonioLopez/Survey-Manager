@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { createAlternative, createQuestion, createSurvey, deleteQuestion, deleteSurvey, getAllSurveys, getUserSurveys, getUserUnasweredSurveys, updateSurvey } from './survey.service';
+import { createAlternative, createQuestion, createSurvey, deleteAlternative, deleteQuestion, deleteSurvey, getAllSurveys, getUserSurveys, getUserUnasweredSurveys, updateSurvey } from './survey.service';
 import { HttpError } from '../../utils/httpErrorHandler';
 import { UpdateSurveyDto } from '../../dto/survey.module.dto';
 
@@ -82,7 +82,7 @@ export const createQuestionController = async (req: Request, res: Response) => {
 export const deleteQuestionController = async (req: Request, res: Response) => {
     try {
         const { userId, surveyId, questionId } = req.body;
-        if (userId === undefined) {
+        if (userId === undefined || surveyId === undefined || questionId === undefined) {
             return res.status(400).json({ message: 'Invalid arguments' });
         }
         const result = await deleteQuestion(userId, surveyId, questionId);
@@ -103,6 +103,22 @@ export const createAlternativeController = async (req: Request, res: Response) =
         }
         const result = await createAlternative(questionId, value);
         return res.status(200).json({ result });
+    } catch (error) {
+        if (error instanceof HttpError) {
+            return res.status(error.statusCode).json({ message: error.message });
+        }
+        res.status(500).json({ message: (error as Error).message });
+    }
+};
+
+export const deleteAlternativeController = async (req: Request, res: Response) => {
+    try {
+        const { userId, surveyId, questionId, alternativeId } = req.body;
+        if (userId === undefined || surveyId === undefined || questionId === undefined || alternativeId === undefined) {
+            return res.status(400).json({ message: 'Invalid arguments' });
+        }
+        const result = await deleteAlternative(userId, surveyId, questionId, alternativeId);
+        return res.status(200).json(result);
     } catch (error) {
         if (error instanceof HttpError) {
             return res.status(error.statusCode).json({ message: error.message });

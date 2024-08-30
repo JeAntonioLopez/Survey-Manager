@@ -45,7 +45,13 @@ export const deleteSurvey = async (userId: number, surveyId: number) => {
 };
 
 export const deleteQuestion = async (userId: number, surveyId: number, questionId: number) => {
-    // Buscar la pregunta asegurando que pertenece al survey y al user correctos
+    /*
+    SELECT q.*
+    FROM question q
+    JOIN survey s ON q.surveyId = s.id
+    JOIN "user" u ON s.userId = u.id
+    WHERE q.id = ? AND s.id = ? AND u.id = ?;
+    */
     const question = await Question.findOne({
         where: {
             id: questionId,
@@ -56,17 +62,15 @@ export const deleteQuestion = async (userId: number, surveyId: number, questionI
                 }
             }
         },
-        relations: ['survey']  // Relación con survey para cascada de eliminación
+        relations: []
     });
 
     if (!question) {
         throw new HttpError('Question not found or does not belong to the specified user and survey', 404);
     }
 
-    // Eliminar la pregunta
     await Question.remove(question);
 
-    // Devolver la encuesta actualizada
     const updatedSurvey = await Survey.findOne({
         where: { id: surveyId, user: { id: userId } },
         relations: ['questions']
@@ -79,6 +83,48 @@ export const deleteQuestion = async (userId: number, surveyId: number, questionI
     return updatedSurvey;
 };
 
+export const deleteAlternative = async (userId: number, surveyId: number, questionId: number, alternativeId: number) => {
+    /*
+    SELECT a.*
+    FROM alternative a
+    JOIN question q ON a.questionId = q.id
+    JOIN survey s ON q.surveyId = s.id
+    JOIN "user" u ON s.userId = u.id
+    WHERE q.id = ? AND s.id = ? AND u.id = ?;
+    */
+    const alternative = await Alternative.findOne({
+        where: {
+            id: alternativeId,
+            question: {
+                id: questionId,
+                survey: {
+                    id: surveyId,
+                    user: {
+                        id: userId
+                    }
+                }
+            }
+        },
+        relations: []
+    });
+
+    if (!alternative) {
+        throw new HttpError('Alternative not found or does not belong to the specified user, survey or question', 404);
+    }
+
+    await Alternative.remove(alternative);
+
+    const updatedQuestion = await Question.findOne({
+        where: { id: questionId },
+        relations: ['alternatives']
+    });
+
+    if (!updatedQuestion) {
+        throw new HttpError('Survey not found after deletion', 404);
+    }
+
+    return updatedQuestion;
+};
 
 
 export const updateSurvey = async (updateSurveyDto: UpdateSurveyDto) => {
