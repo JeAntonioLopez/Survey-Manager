@@ -5,7 +5,7 @@ import cors from 'cors';
 import "reflect-metadata"
 import { AppDataSource } from './utils/typeormConfig';
 import { responseRoutes } from './modules/response/response.routes';
-import { userRoutes } from './modules/user/survey.routes';
+import { authRoutes } from './modules/auth/auth.routes';
 
 
 const app = express();
@@ -19,7 +19,7 @@ const PORT = 3000;
 
 app.use('/api/survey', surveyRoutes);
 app.use('/api/response', responseRoutes);
-app.use('/api/user', userRoutes);
+app.use('/api/auth', authRoutes);
 
 try {
     AppDataSource.initialize();
