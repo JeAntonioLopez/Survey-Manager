@@ -15,7 +15,7 @@ export const registerUserController = async (req: Request, res: Response) => {
         }
         const RegisterUserDTO: RegisterUserDTO = { email: email, password: password }
         const result = await registerUser(RegisterUserDTO);
-        return res.status(200).json({ result });
+        return res.status(200).json(result);
     } catch (error) {
         if (error instanceof HttpError) {
             return res.status(error.statusCode).json({ message: error.message });
@@ -32,7 +32,7 @@ export const loginController = async (req: Request, res: Response) => {
         }
         const loginDTO: LoginDTO = { email: email, password: password }
         const result = await login(loginDTO);
-        return res.status(200).json({ result });
+        return res.status(200).json(result);
     } catch (error) {
         if (error instanceof HttpError) {
             return res.status(error.statusCode).json({ message: error.message });
@@ -49,7 +49,7 @@ export const changePasswordController = async (req: Request, res: Response) => {
         }
         const changuePasswordDTO: ChangePasswordDTO = { email: email, newPassword: newPassword }
         const result = await changuePassword(changuePasswordDTO);
-        return res.status(200).json({ result });
+        return res.status(200).json(result);
     } catch (error) {
         if (error instanceof HttpError) {
             return res.status(error.statusCode).json({ message: error.message });

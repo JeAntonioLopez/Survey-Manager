@@ -20,7 +20,7 @@ export const sendResponseSurveyController = async (req: AuthenticatedRequest, re
             allowIncompleteResponses: false,
         };
         const result = await sendResponseSurvey(sendResponseSurveyDTO);
-        return res.status(200).json({ result });
+        return res.status(200).json(result);
     } catch (error) {
         if (error instanceof HttpError) {
             return res.status(error.statusCode).json({ message: error.message });

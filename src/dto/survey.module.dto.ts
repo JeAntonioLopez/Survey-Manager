@@ -70,6 +70,9 @@ export class DeleteAlternativeDTO{
 
 export class CreateQuestionDTO{
     @IsNumber()
+    userId: number;
+
+    @IsNumber()
     surveyId: number;
 
     @IsString()
@@ -77,6 +80,9 @@ export class CreateQuestionDTO{
 }
 
 export class CreateAlternativeDTO{
+    @IsNumber()
+    userId: number;
+    
     @IsNumber()
     questionId: number;
 

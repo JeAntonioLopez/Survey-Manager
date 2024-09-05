@@ -22,28 +22,19 @@ export const createSurvey = async (createSurveyDTO: CreateSurveyDTO) => {
     survey.description = description;
     survey.user = user;
     await survey.save();
-    return ({ survey: survey });
+    return ({ message: "Survey created successfully", survey: survey });
 };
 
 export const deleteSurvey = async (deleteSurveyDTO: DeleteSurveyDTO) => {
     const { userId, surveyId } = deleteSurveyDTO;
-    const user = await User.findOne({ where: { id: userId }, relations: ['surveys'] });
-    if (!user) {
-        throw new HttpError('User not found', 404);
-    }
-
-    const survey = user.surveys.find(s => s.id === surveyId);
+    const survey = await Survey.findOne({ where: { id: surveyId, user: { id: userId } }, relations: [] });
     if (!survey) {
-        throw new HttpError('Survey not found', 404);
+        throw new HttpError('Survey not found on the user list', 404);
     }
 
     await Survey.remove(survey);
 
-    const updatedUser = await User.findOne({ where: { id: userId }, relations: ['surveys'] });
-    if (!updatedUser) {
-        throw new HttpError('User not found, survey was deleted', 404);
-    }
-    return (updatedUser.surveys);
+    return ({ message: "Survey removed successfully" });
 };
 
 export const deleteQuestion = async (deleteQuetionDTO: DeleteQuetionDTO) => {
@@ -74,16 +65,7 @@ export const deleteQuestion = async (deleteQuetionDTO: DeleteQuetionDTO) => {
 
     await Question.remove(question);
 
-    const updatedSurvey = await Survey.findOne({
-        where: { id: surveyId, user: { id: userId } },
-        relations: ['questions']
-    });
-
-    if (!updatedSurvey) {
-        throw new HttpError('Survey not found after deletion', 404);
-    }
-
-    return updatedSurvey;
+    return ({ message: "Question removed successfully" });
 };
 
 export const deleteAlternative = async (deleteAlternativeDTO: DeleteAlternativeDTO) => {
@@ -118,30 +100,16 @@ export const deleteAlternative = async (deleteAlternativeDTO: DeleteAlternativeD
 
     await Alternative.remove(alternative);
 
-    const updatedQuestion = await Question.findOne({
-        where: { id: questionId },
-        relations: ['alternatives']
-    });
-
-    if (!updatedQuestion) {
-        throw new HttpError('Survey not found after deletion', 404);
-    }
-
-    return updatedQuestion;
+    return ({ message: "Alternative removed successfully" });
 };
 
 
 export const updateSurvey = async (updateSurveyDto: UpdateSurveyDto) => {
     const { userId, surveyId, name, description, released, closingDate } = updateSurveyDto;
 
-    const user = await User.findOne({ where: { id: userId }, relations: ['surveys'] });
-    if (!user) {
-        throw new HttpError('User not found', 404);
-    }
-
-    const survey = await Survey.findOne({ where: { id: surveyId } });
+    const survey = await Survey.findOne({ where: { id: surveyId, user: { id: userId } } });
     if (!survey) {
-        throw new HttpError('Survey not found', 404);
+        throw new HttpError('Survey not found on the user list', 404);
     }
 
     // Update fields
@@ -164,33 +132,39 @@ export const updateSurvey = async (updateSurveyDto: UpdateSurveyDto) => {
     }
 
     await survey.save();
-    return { survey };
+    return { message: "Survey updated successfully", survey };
 };
 
-
-
 export const createQuestion = async (createQuestionDTO: CreateQuestionDTO) => {
-    const { surveyId, text } = createQuestionDTO;
-    // search survey by id
-    const survey = await Survey.findOne({ where: { id: surveyId } });
+    const { userId, surveyId, text } = createQuestionDTO;
+
+    // search survey by id and userId
+    const survey = await Survey.findOne({ where: { id: surveyId, user: { id: userId } } });
     if (!survey) {
         throw new HttpError('Survey not found', 404);
     }
 
-    // creater question
+    // create question
     const question = new Question();
     question.text = text;
     question.survey = survey;
     await question.save();
-    return ({ question: question });
+    return ({ message: "Question created successfully", question: question });
 };
 
 export const createAlternative = async (createAlternativeDTO: CreateAlternativeDTO) => {
-    const { questionId, value } = createAlternativeDTO;
+    const { userId, questionId, value } = createAlternativeDTO;
     // search question by id
-    const question = await Question.findOne({ where: { id: questionId } });
+    const question = await Question.findOne({
+        where: {
+            id: questionId,
+            survey: {
+                user: { id: userId }
+            }
+        }
+    });
     if (!question) {
-        throw new HttpError('Question not found', 404);
+        throw new HttpError('Question not found in any of the user surveys', 404);
     }
 
     // creater alternative
@@ -198,7 +172,7 @@ export const createAlternative = async (createAlternativeDTO: CreateAlternativeD
     alternative.value = value;
     alternative.question = question;
     await alternative.save();
-    return ({ alternative: alternative });
+    return ({ message: "Alternative created successfully", alternative: alternative });
 };
 
 export const getUserSurveys = async (userId: number) => {

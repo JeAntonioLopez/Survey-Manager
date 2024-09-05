@@ -14,7 +14,7 @@ export const createSurveyController = async (req: AuthenticatedRequest, res: Res
         }
         const createSurveyDTO: CreateSurveyDTO = { userId, description, name };
         const result = await createSurvey(createSurveyDTO);
-        return res.status(200).json({ result });
+        return res.status(200).json(result);
     } catch (error) {
         if (error instanceof HttpError) {
             return res.status(error.statusCode).json({ message: error.message });
@@ -32,7 +32,7 @@ export const deleteSurveyController = async (req: AuthenticatedRequest, res: Res
         }
         const deleteSurveyDTO: DeleteSurveyDTO = { userId, surveyId };
         const result = await deleteSurvey(deleteSurveyDTO);
-        return res.status(200).json({ result });
+        return res.status(200).json(result);
     } catch (error) {
         if (error instanceof HttpError) {
             return res.status(error.statusCode).json({ message: error.message });
@@ -60,7 +60,7 @@ export const updateSurveyController = async (req: AuthenticatedRequest, res: Res
             closingDate: closingDate
         };
         const result = await updateSurvey(updateSurveyDTO);
-        return res.status(200).json({ result });
+        return res.status(200).json(result);
     } catch (error) {
         if (error instanceof HttpError) {
             return res.status(error.statusCode).json({ message: error.message });
@@ -71,13 +71,14 @@ export const updateSurveyController = async (req: AuthenticatedRequest, res: Res
 
 export const createQuestionController = async (req: AuthenticatedRequest, res: Response) => {
     try {
+        const userId = req.user.id;
         const { surveyId, text } = req.body;
-        if (surveyId === undefined || text === undefined) {
+        if (surveyId === undefined || text === undefined || userId === undefined) {
             return res.status(400).json({ message: 'Invalid arguments' });
         }
-        const createQuestionDTO: CreateQuestionDTO = { surveyId, text };
+        const createQuestionDTO: CreateQuestionDTO = { userId, surveyId, text };
         const result = await createQuestion(createQuestionDTO);
-        return res.status(200).json({ result });
+        return res.status(200).json(result);
     } catch (error) {
         if (error instanceof HttpError) {
             return res.status(error.statusCode).json({ message: error.message });
@@ -106,13 +107,14 @@ export const deleteQuestionController = async (req: AuthenticatedRequest, res: R
 
 export const createAlternativeController = async (req: AuthenticatedRequest, res: Response) => {
     try {
+        const userId = req.user.id;
         const { questionId, value } = req.body;
-        if (questionId === undefined || value === undefined) {
+        if (questionId === undefined || value === undefined || userId) {
             return res.status(400).json({ message: 'Invalid arguments' });
         }
-        const createAlternativeDTO: CreateAlternativeDTO = { questionId, value };
+        const createAlternativeDTO: CreateAlternativeDTO = { userId, questionId, value };
         const result = await createAlternative(createAlternativeDTO);
-        return res.status(200).json({ result });
+        return res.status(200).json(result);
     } catch (error) {
         if (error instanceof HttpError) {
             return res.status(error.statusCode).json({ message: error.message });
@@ -170,7 +172,7 @@ export const getAllSurveysController = async (_req: AuthenticatedRequest, res: R
 
 export const getUserUnasweredSurveysController = async (req: AuthenticatedRequest, res: Response) => {
     try {
-        const userId  = req.user.id;
+        const userId = req.user.id;
         if (userId === undefined) {
             return res.status(400).json({ message: 'Invalid arguments' });
         }
