@@ -87,7 +87,7 @@ export const deleteQuestion = async (deleteQuetionDTO: DeleteQuetionDTO) => {
 };
 
 export const deleteAlternative = async (deleteAlternativeDTO: DeleteAlternativeDTO) => {
-    const {userId, surveyId, questionId, alternativeId} = deleteAlternativeDTO
+    const { userId, surveyId, questionId, alternativeId } = deleteAlternativeDTO
     /*
     SELECT a.*
     FROM alternative a
@@ -170,7 +170,7 @@ export const updateSurvey = async (updateSurveyDto: UpdateSurveyDto) => {
 
 
 export const createQuestion = async (createQuestionDTO: CreateQuestionDTO) => {
-    const {surveyId, text} = createQuestionDTO;
+    const { surveyId, text } = createQuestionDTO;
     // search survey by id
     const survey = await Survey.findOne({ where: { id: surveyId } });
     if (!survey) {
@@ -186,7 +186,7 @@ export const createQuestion = async (createQuestionDTO: CreateQuestionDTO) => {
 };
 
 export const createAlternative = async (createAlternativeDTO: CreateAlternativeDTO) => {
-    const {questionId, value} = createAlternativeDTO;
+    const { questionId, value } = createAlternativeDTO;
     // search question by id
     const question = await Question.findOne({ where: { id: questionId } });
     if (!question) {
@@ -211,10 +211,42 @@ export const getUserSurveys = async (userId: number) => {
     return ({ surveys: user.surveys });
 };
 
+
+
 export const getAllSurveys = async () => {
-    const surveys = await Survey.find({ relations: ['questions', 'questions.alternatives', 'user'] });
+    /*
+    SELECT
+        survey,
+        question,
+        alternative,
+        "user".id AS user_id,
+        "user".email AS user_email
+    FROM
+        survey
+    LEFT JOIN
+        question ON survey.id = question."surveyId"
+    LEFT JOIN
+        alternative ON question.id = alternative."questionId"
+    LEFT JOIN
+        "user" ON survey."userId" = "user".id;
+     */
+    const surveys = await Survey.createQueryBuilder('survey')
+        .leftJoinAndSelect('survey.questions', 'question')
+        .leftJoinAndSelect('question.alternatives', 'alternative')
+        .leftJoinAndSelect('survey.user', 'user')
+        .select([
+            'survey',
+            'question',
+            'alternative',
+            'user.id',
+            'user.email'
+        ])
+        .addSelect('user.email')
+        .getMany();
+
     return { surveys };
 };
+
 
 export const getUserUnasweredSurveys = async (userId: number) => {
     // Search for the user by id
