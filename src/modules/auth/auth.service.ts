@@ -5,7 +5,8 @@ import bcrypt from 'bcrypt';
 import * as jwt from 'jsonwebtoken';
 
 
-const JWT_KEY = 'assdasfsa';
+const JWT_KEY = process.env.JWT_KEY || "Default JWT Key";
+
 const SALT_ROUNDS = 10;
 export const registerUser = async (registerUserDTO: RegisterUserDTO) => {
     const user = new User();
@@ -43,4 +44,13 @@ export const changuePassword = async (changuePasswordDTO: ChangePasswordDTO) => 
     user.password = await bcrypt.hash(changuePasswordDTO.newPassword,SALT_ROUNDS);
     await user.save();
     return { user };
+};
+
+export const verifyToken = async (token: string) => {
+    try {
+        jwt.verify(token,JWT_KEY);
+        return { valid: true };
+      } catch (error) {
+        return { valid: false, message: 'Invalid token' };
+      }
 };

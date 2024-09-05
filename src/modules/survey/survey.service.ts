@@ -212,7 +212,7 @@ export const getUserSurveys = async (userId: number) => {
 };
 
 export const getAllSurveys = async () => {
-    const surveys = await Survey.find({ relations: ['questions', 'questions.alternatives'] });
+    const surveys = await Survey.find({ relations: ['questions', 'questions.alternatives', 'user'] });
     return { surveys };
 };
 

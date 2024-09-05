@@ -1,16 +1,18 @@
-import { Request, Response } from 'express';
+import { Response } from 'express';
 import { createAlternative, createQuestion, createSurvey, deleteAlternative, deleteQuestion, deleteSurvey, getAllSurveys, getUserSurveys, getUserUnasweredSurveys, updateSurvey } from './survey.service';
 import { HttpError } from '../../utils/httpErrorHandler';
 import { CreateAlternativeDTO, CreateQuestionDTO, CreateSurveyDTO, DeleteAlternativeDTO, DeleteQuetionDTO, DeleteSurveyDTO, UpdateSurveyDto } from '../../dto/survey.module.dto';
+import { AuthenticatedRequest } from '../../types/express';
 
 
-export const createSurveyController = async (req: Request, res: Response) => {
+export const createSurveyController = async (req: AuthenticatedRequest, res: Response) => {
     try {
-        const { userId, description, name } = req.body;
+        const userId = req.user.id;
+        const { description, name } = req.body;
         if (userId === undefined || description === undefined || name === undefined) {
             return res.status(400).json({ message: 'Invalid arguments' });
         }
-        const createSurveyDTO: CreateSurveyDTO = {userId, description, name};
+        const createSurveyDTO: CreateSurveyDTO = { userId, description, name };
         const result = await createSurvey(createSurveyDTO);
         return res.status(200).json({ result });
     } catch (error) {
@@ -21,13 +23,14 @@ export const createSurveyController = async (req: Request, res: Response) => {
     }
 };
 
-export const deleteSurveyController = async (req: Request, res: Response) => {
+export const deleteSurveyController = async (req: AuthenticatedRequest, res: Response) => {
     try {
-        const { userId, surveyId }: { userId: number, surveyId: number } = req.body;
+        const userId = req.user.id;
+        const { surveyId }: { surveyId: number } = req.body;
         if (userId === undefined || surveyId === undefined) {
             return res.status(400).json({ message: 'Invalid arguments' });
         }
-        const deleteSurveyDTO: DeleteSurveyDTO = {userId, surveyId};
+        const deleteSurveyDTO: DeleteSurveyDTO = { userId, surveyId };
         const result = await deleteSurvey(deleteSurveyDTO);
         return res.status(200).json({ result });
     } catch (error) {
@@ -38,9 +41,10 @@ export const deleteSurveyController = async (req: Request, res: Response) => {
     }
 };
 
-export const updateSurveyController = async (req: Request, res: Response) => {
+export const updateSurveyController = async (req: AuthenticatedRequest, res: Response) => {
     try {
-        const { userId, surveyId, name, description, released, closingDate } = req.body;
+        const userId = req.user.id;
+        const { surveyId, name, description, released, closingDate } = req.body;
         if (userId === undefined || surveyId === undefined) {
             return res.status(400).json({ message: 'Invalid arguments' });
         }
@@ -65,13 +69,13 @@ export const updateSurveyController = async (req: Request, res: Response) => {
     }
 };
 
-export const createQuestionController = async (req: Request, res: Response) => {
+export const createQuestionController = async (req: AuthenticatedRequest, res: Response) => {
     try {
         const { surveyId, text } = req.body;
         if (surveyId === undefined || text === undefined) {
             return res.status(400).json({ message: 'Invalid arguments' });
         }
-        const createQuestionDTO : CreateQuestionDTO = { surveyId, text };
+        const createQuestionDTO: CreateQuestionDTO = { surveyId, text };
         const result = await createQuestion(createQuestionDTO);
         return res.status(200).json({ result });
     } catch (error) {
@@ -82,13 +86,14 @@ export const createQuestionController = async (req: Request, res: Response) => {
     }
 };
 
-export const deleteQuestionController = async (req: Request, res: Response) => {
+export const deleteQuestionController = async (req: AuthenticatedRequest, res: Response) => {
     try {
-        const { userId, surveyId, questionId } = req.body;
+        const userId = req.user.id;
+        const { surveyId, questionId } = req.body;
         if (userId === undefined || surveyId === undefined || questionId === undefined) {
             return res.status(400).json({ message: 'Invalid arguments' });
         }
-        const deleteQuestionDTO: DeleteQuetionDTO = {userId,surveyId, questionId};
+        const deleteQuestionDTO: DeleteQuetionDTO = { userId, surveyId, questionId };
         const result = await deleteQuestion(deleteQuestionDTO);
         return res.status(200).json(result);
     } catch (error) {
@@ -99,7 +104,7 @@ export const deleteQuestionController = async (req: Request, res: Response) => {
     }
 };
 
-export const createAlternativeController = async (req: Request, res: Response) => {
+export const createAlternativeController = async (req: AuthenticatedRequest, res: Response) => {
     try {
         const { questionId, value } = req.body;
         if (questionId === undefined || value === undefined) {
@@ -116,13 +121,14 @@ export const createAlternativeController = async (req: Request, res: Response) =
     }
 };
 
-export const deleteAlternativeController = async (req: Request, res: Response) => {
+export const deleteAlternativeController = async (req: AuthenticatedRequest, res: Response) => {
     try {
-        const { userId, surveyId, questionId, alternativeId } = req.body;
+        const userId = req.user.id;
+        const { surveyId, questionId, alternativeId } = req.body;
         if (userId === undefined || surveyId === undefined || questionId === undefined || alternativeId === undefined) {
             return res.status(400).json({ message: 'Invalid arguments' });
         }
-        const deleteAlternativeDTO: DeleteAlternativeDTO = {userId,surveyId,questionId,alternativeId}
+        const deleteAlternativeDTO: DeleteAlternativeDTO = { userId, surveyId, questionId, alternativeId }
         const result = await deleteAlternative(deleteAlternativeDTO);
         return res.status(200).json(result);
     } catch (error) {
@@ -133,9 +139,9 @@ export const deleteAlternativeController = async (req: Request, res: Response) =
     }
 };
 
-export const getUserSurveysController = async (req: Request, res: Response) => {
+export const getUserSurveysController = async (req: AuthenticatedRequest, res: Response) => {
     try {
-        const { userId } = req.body;
+        const userId = req.user.id;
         if (userId === undefined) {
             return res.status(400).json({ message: 'Invalid arguments' });
         }
@@ -149,7 +155,7 @@ export const getUserSurveysController = async (req: Request, res: Response) => {
     }
 };
 
-export const getAllSurveysController = async (_req: Request, res: Response) => {
+export const getAllSurveysController = async (_req: AuthenticatedRequest, res: Response) => {
     try {
         const result = await getAllSurveys();
         return res.status(200).json(result);
@@ -162,9 +168,9 @@ export const getAllSurveysController = async (_req: Request, res: Response) => {
 };
 
 
-export const getUserUnasweredSurveysController = async (req: Request, res: Response) => {
+export const getUserUnasweredSurveysController = async (req: AuthenticatedRequest, res: Response) => {
     try {
-        const { userId } = req.body;
+        const userId  = req.user.id;
         if (userId === undefined) {
             return res.status(400).json({ message: 'Invalid arguments' });
         }

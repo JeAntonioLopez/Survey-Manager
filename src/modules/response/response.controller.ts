@@ -1,13 +1,15 @@
-import { Request, Response } from 'express';
+import { Response } from 'express';
 import { getSurveyResults, getUserSurveyResponses, sendResponseSurvey } from './response.service';
 import { HttpError } from '../../utils/httpErrorHandler';
 import { GetUserSurveyResultsDTO, SendResponseSurveyDTO } from '../../dto/response.module.dto';
+import { AuthenticatedRequest } from '../../types/express';
 
 
 
-export const sendResponseSurveyController = async (req: Request, res: Response) => {
+export const sendResponseSurveyController = async (req: AuthenticatedRequest, res: Response) => {
     try {
-        const { userId, surveyId, selectedAlternativesIds }: { userId: number; surveyId: number; selectedAlternativesIds: string[] } = req.body;
+        const userId = req.user.id;
+        const { surveyId, selectedAlternativesIds }: { userId: number; surveyId: number; selectedAlternativesIds: string[] } = req.body;
         if (userId === undefined || surveyId === undefined || selectedAlternativesIds === undefined) {
             return res.status(400).json({ message: 'Invalid arguments' });
         }
@@ -27,9 +29,9 @@ export const sendResponseSurveyController = async (req: Request, res: Response) 
     }
 }
 
-export const getUserSurveyResponsesController = async (req: Request, res: Response) => {
+export const getUserSurveyResponsesController = async (req: AuthenticatedRequest, res: Response) => {
     try {
-        const { userId } = req.body;
+        const userId = req.user.id;
         if (userId === undefined) {
             return res.status(400).json({ message: 'Invalid arguments' });
         }
@@ -43,13 +45,13 @@ export const getUserSurveyResponsesController = async (req: Request, res: Respon
     }
 };
 
-export const getUserSurveyResultsController = async (req: Request, res: Response) => {
+export const getUserSurveyResultsController = async (req: AuthenticatedRequest, res: Response) => {
     try {
-        const { userId, surveyId } = req.body;
+        const userId = req.user.id;
+        const { surveyId } = req.body;
         if (userId === undefined || surveyId === undefined) {
-            return res.status(400).json({ message: 'Invalid arguments' });
         }
-        const getUserSurveyResultsDTO: GetUserSurveyResultsDTO = {userId, surveyId};
+        const getUserSurveyResultsDTO: GetUserSurveyResultsDTO = { userId, surveyId };
         const result = await getSurveyResults(getUserSurveyResultsDTO);
         return res.status(200).json(result);
     } catch (error) {
