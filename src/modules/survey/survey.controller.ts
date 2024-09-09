@@ -5,6 +5,41 @@ import { CreateAlternativeDTO, CreateQuestionDTO, CreateSurveyDTO, DeleteAlterna
 import { AuthenticatedRequest } from '../../types/express';
 
 
+/**
+ * @swagger
+ * /api/survey:
+ *   post:
+ *     summary: Create a new survey
+ *     description: Creates a new survey with a description and name.
+ *     tags: [Survey]
+ *     security:
+ *       - bearerAuth: [] 
+ *     requestBody:
+ *       description: Survey details for creation.
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 example: "Customer Feedback"
+ *               description:
+ *                 type: string
+ *                 example: "Survey to gather customer feedback."
+ *     responses:
+ *       200:
+ *         description: Successfully created the survey.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Survey created successfully"
+ */
 export const createSurveyController = async (req: AuthenticatedRequest, res: Response) => {
     try {
         const userId = req.user.id;
@@ -23,6 +58,38 @@ export const createSurveyController = async (req: AuthenticatedRequest, res: Res
     }
 };
 
+/**
+ * @swagger
+ * /api/survey:
+ *   delete:
+ *     summary: Delete a survey
+ *     description: Deletes a survey based on its ID.
+ *     tags: [Survey]
+ *     security:
+ *       - bearerAuth: []  # Requiere autenticación con token Bearer
+ *     requestBody:
+ *       description: Survey ID to delete.
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               surveyId:
+ *                 type: integer
+ *                 example: 1
+ *     responses:
+ *       200:
+ *         description: Successfully deleted the survey.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Survey deleted successfully"
+ */
 export const deleteSurveyController = async (req: AuthenticatedRequest, res: Response) => {
     try {
         const userId = req.user.id;
@@ -41,6 +108,52 @@ export const deleteSurveyController = async (req: AuthenticatedRequest, res: Res
     }
 };
 
+/**
+ * @swagger
+ * /api/survey:
+ *   patch:
+ *     summary: Update an existing survey
+ *     description: Updates the details of an existing survey.
+ *     tags: [Survey]
+ *     security:
+ *       - bearerAuth: []  # Requiere autenticación con token Bearer
+ *     requestBody:
+ *       description: Survey details to update.
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               surveyId:
+ *                 type: integer
+ *                 example: 1
+ *               name:
+ *                 type: string
+ *                 example: "Updated Survey Name"
+ *               description:
+ *                 type: string
+ *                 example: "Updated description."
+ *               released:
+ *                 type: string
+ *                 format: date-time
+ *                 example: "2024-09-01T00:00:00Z"
+ *               closingDate:
+ *                 type: string
+ *                 format: date-time
+ *                 example: "2024-09-30T00:00:00Z"
+ *     responses:
+ *       200:
+ *         description: Successfully updated the survey.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Survey updated successfully"
+ */
 export const updateSurveyController = async (req: AuthenticatedRequest, res: Response) => {
     try {
         const userId = req.user.id;
@@ -69,6 +182,41 @@ export const updateSurveyController = async (req: AuthenticatedRequest, res: Res
     }
 };
 
+/**
+ * @swagger
+ * /api/survey/question:
+ *   post:
+ *     summary: Create a new question for a survey
+ *     description: Adds a new question to a survey.
+ *     tags: [Survey]
+ *     security:
+ *       - bearerAuth: []  # Requiere autenticación con token Bearer
+ *     requestBody:
+ *       description: Question details for creation.
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               surveyId:
+ *                 type: integer
+ *                 example: 1
+ *               text:
+ *                 type: string
+ *                 example: "What is your favorite color?"
+ *     responses:
+ *       200:
+ *         description: Successfully created the question.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Question created successfully"
+ */
 export const createQuestionController = async (req: AuthenticatedRequest, res: Response) => {
     try {
         const userId = req.user.id;
@@ -87,6 +235,41 @@ export const createQuestionController = async (req: AuthenticatedRequest, res: R
     }
 };
 
+/**
+ * @swagger
+ * /api/survey/question:
+ *   delete:
+ *     summary: Delete a question from a survey
+ *     description: Deletes a question from a survey.
+ *     tags: [Survey]
+ *     security:
+ *       - bearerAuth: []  # Requiere autenticación con token Bearer
+ *     requestBody:
+ *       description: Question details for deletion.
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               surveyId:
+ *                 type: integer
+ *                 example: 1
+ *               questionId:
+ *                 type: integer
+ *                 example: 1
+ *     responses:
+ *       200:
+ *         description: Successfully deleted the question.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Question deleted successfully"
+ */
 export const deleteQuestionController = async (req: AuthenticatedRequest, res: Response) => {
     try {
         const userId = req.user.id;
@@ -105,6 +288,42 @@ export const deleteQuestionController = async (req: AuthenticatedRequest, res: R
     }
 };
 
+
+/**
+ * @swagger
+ * /api/survey/question/alternative:
+ *   post:
+ *     summary: Create a new alternative for a question
+ *     description: Adds a new alternative to a question in a survey.
+ *     tags: [Survey]
+ *     security:
+ *       - bearerAuth: []  # Requiere autenticación con token Bearer
+ *     requestBody:
+ *       description: Alternative details for creation.
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               questionId:
+ *                 type: integer
+ *                 example: 1
+ *               value:
+ *                 type: string
+ *                 example: "Blue"
+ *     responses:
+ *       200:
+ *         description: Successfully created the alternative.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Alternative created successfully"
+ */
 export const createAlternativeController = async (req: AuthenticatedRequest, res: Response) => {
     try {
         const userId = req.user.id;
@@ -123,6 +342,45 @@ export const createAlternativeController = async (req: AuthenticatedRequest, res
     }
 };
 
+
+/**
+ * @swagger
+ * /api/survey/question/alternative:
+ *   delete:
+ *     summary: Delete an alternative from a question
+ *     description: Deletes an alternative from a question in a survey.
+ *     tags: [Survey]
+ *     security:
+ *       - bearerAuth: []  # Requiere autenticación con token Bearer
+ *     requestBody:
+ *       description: Alternative details for deletion.
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               surveyId:
+ *                 type: integer
+ *                 example: 1
+ *               questionId:
+ *                 type: integer
+ *                 example: 1
+ *               alternativeId:
+ *                 type: integer
+ *                 example: 1
+ *     responses:
+ *       200:
+ *         description: Successfully deleted the alternative.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Alternative deleted successfully"
+ */
 export const deleteAlternativeController = async (req: AuthenticatedRequest, res: Response) => {
     try {
         const userId = req.user.id;
@@ -141,6 +399,43 @@ export const deleteAlternativeController = async (req: AuthenticatedRequest, res
     }
 };
 
+/**
+ * @swagger
+ * /api/survey:
+ *   get:
+ *     summary: Get user surveys
+ *     description: Retrieves all surveys created by a specific user.
+ *     tags: [Survey]
+ *     security:
+ *       - bearerAuth: []  # Requiere autenticación con token Bearer
+ *     responses:
+ *       200:
+ *         description: List of surveys created by the user.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   surveyId:
+ *                     type: integer
+ *                     example: 1
+ *                   name:
+ *                     type: string
+ *                     example: "Customer Feedback"
+ *                   description:
+ *                     type: string
+ *                     example: "Survey to gather customer feedback."
+ *                   released:
+ *                     type: string
+ *                     format: date-time
+ *                     example: "2024-09-01T00:00:00Z"
+ *                   closingDate:
+ *                     type: string
+ *                     format: date-time
+ *                     example: "2024-09-30T00:00:00Z"
+ */
 export const getUserSurveysController = async (req: AuthenticatedRequest, res: Response) => {
     try {
         const userId = req.user.id;
@@ -157,6 +452,43 @@ export const getUserSurveysController = async (req: AuthenticatedRequest, res: R
     }
 };
 
+/**
+ * @swagger
+ * /api/survey/all:
+ *   get:
+ *     summary: Get all surveys
+ *     description: Retrieves all surveys available in the system.
+ *     tags: [Survey]
+ *     security:
+ *       - bearerAuth: []  # Requiere autenticación con token Bearer
+ *     responses:
+ *       200:
+ *         description: List of all surveys in the system.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   surveyId:
+ *                     type: integer
+ *                     example: 1
+ *                   name:
+ *                     type: string
+ *                     example: "Customer Feedback"
+ *                   description:
+ *                     type: string
+ *                     example: "Survey to gather customer feedback."
+ *                   released:
+ *                     type: string
+ *                     format: date-time
+ *                     example: "2024-09-01T00:00:00Z"
+ *                   closingDate:
+ *                     type: string
+ *                     format: date-time
+ *                     example: "2024-09-30T00:00:00Z"
+ */
 export const getAllSurveysController = async (_req: AuthenticatedRequest, res: Response) => {
     try {
         const result = await getAllSurveys();
@@ -169,7 +501,43 @@ export const getAllSurveysController = async (_req: AuthenticatedRequest, res: R
     }
 };
 
-
+/**
+ * @swagger
+ * /api/survey/unanswered:
+ *   get:
+ *     summary: Get unanswered surveys for a user
+ *     description: Retrieves surveys that a specific user has not yet answered.
+ *     tags: [Survey]
+ *     security:
+ *       - bearerAuth: []  # Requiere autenticación con token Bearer
+ *     responses:
+ *       200:
+ *         description: List of unanswered surveys for the user.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   surveyId:
+ *                     type: integer
+ *                     example: 1
+ *                   name:
+ *                     type: string
+ *                     example: "Customer Feedback"
+ *                   description:
+ *                     type: string
+ *                     example: "Survey to gather customer feedback."
+ *                   released:
+ *                     type: string
+ *                     format: date-time
+ *                     example: "2024-09-01T00:00:00Z"
+ *                   closingDate:
+ *                     type: string
+ *                     format: date-time
+ *                     example: "2024-09-30T00:00:00Z"
+ */
 export const getUserUnasweredSurveysController = async (req: AuthenticatedRequest, res: Response) => {
     try {
         const userId = req.user.id;

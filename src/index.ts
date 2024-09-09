@@ -16,14 +16,22 @@ import swaggerJsdoc from 'swagger-jsdoc';
 
 const app = express();
 
-
 const swaggerOptions = {
     definition: {
         openapi: '3.0.0',
         info: {
             title: 'API Documentation',
             version: '1.0.0',
-            description: 'API documentation with Swagger'
+            description: 'API documentation with Swagger',
+        },
+        components: {
+            securitySchemes: {
+                bearerAuth: {
+                    type: 'http',
+                    scheme: 'bearer',
+                    bearerFormat: 'JWT',
+                },
+            },
         },
     },
     servers: [
@@ -33,9 +41,10 @@ const swaggerOptions = {
         },
     ],
     apis: [
-        './src/modules/**/*controller.ts'
+        './src/modules/**/*controller.ts',  // Ruta a los controladores donde está la documentación de Swagger
     ],
 };
+
 
 
 

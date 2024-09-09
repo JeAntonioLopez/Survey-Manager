@@ -106,7 +106,7 @@ export const getUserSurveyResponses = async (userId: number) => {
         throw new HttpError('User not found', 404);
     }
 
-    return (user);
+    return (user.responses);
 };
 
 export const getSurveyResults = async (getUserSurveyResultsDTO: GetUserSurveyResultsDTO) => {
@@ -170,6 +170,8 @@ export const getSurveyResults = async (getUserSurveyResultsDTO: GetUserSurveyRes
         });
     }
 
-
-    return surveyResults;
+    if(surveyResults.length === 0 ){
+        return ({message:"This survey has no responses yet"});
+    }
+    return (surveyResults);
 };

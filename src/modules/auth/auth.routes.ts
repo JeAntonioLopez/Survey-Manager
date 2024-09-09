@@ -5,4 +5,4 @@ export const authRoutes: Router = Router();
 
 authRoutes.post('/register', registerUserController);
 authRoutes.post('/login', loginController);
-authRoutes.post('/changuePassword', changePasswordController);
+authRoutes.put('/changuePassword', changePasswordController);
