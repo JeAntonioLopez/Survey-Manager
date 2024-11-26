@@ -4,7 +4,7 @@ The Survey Manager application is designed to create, manage, and respond to sur
 
 ## Architecture
 
-![Architecture Diagram](../ERD/survey_manager_db.png)
+![Architecture Diagram](./ERD/survey_manager_db.png)
 
 *Note: This application uses a modular monolithic architecture for simplicity and ease of management while maintaining clear separation of concerns.*
 
