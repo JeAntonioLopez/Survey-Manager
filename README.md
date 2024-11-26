@@ -20,7 +20,7 @@ The Survey Manager application is designed to create, manage, and respond to sur
 
 - **Survey Endpoints**: Endpoints to create, update, and delete surveys.
 - **Response Endpoints**: Endpoints for users to submit and view responses.
-- API Documentation is available via [Swagger](https://your-api-url/docs).
+- API Documentation is available via [Swagger], check: "[.../docs]".
 
 ## Repositories
 
