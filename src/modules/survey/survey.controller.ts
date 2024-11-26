@@ -328,7 +328,7 @@ export const createAlternativeController = async (req: AuthenticatedRequest, res
     try {
         const userId = req.user.id;
         const { questionId, value } = req.body;
-        if (questionId === undefined || value === undefined || userId) {
+        if (questionId === undefined || value === undefined || userId === undefined) {
             return res.status(400).json({ message: 'Invalid arguments' });
         }
         const createAlternativeDTO: CreateAlternativeDTO = { userId, questionId, value };

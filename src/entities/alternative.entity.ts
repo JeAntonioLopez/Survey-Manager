@@ -1,8 +1,9 @@
-import { Entity, Column, PrimaryGeneratedColumn, BaseEntity, ManyToOne, OneToMany } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, BaseEntity, ManyToOne, OneToMany, Unique } from 'typeorm';
 import { Question } from './question.entity';
 import { Answer } from './answer';
 
 @Entity()
+@Unique(["question", "value"])
 export class Alternative extends BaseEntity {
     @PrimaryGeneratedColumn() // Serial 
     id: number;

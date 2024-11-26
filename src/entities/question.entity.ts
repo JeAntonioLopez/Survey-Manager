@@ -20,3 +20,4 @@ export class Question extends BaseEntity {
     @OneToMany(() => Answer, (answer) => answer.question, { cascade: true, onDelete: "CASCADE" })
     answers: Answer[];
 }
+
