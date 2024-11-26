@@ -4,7 +4,7 @@ The Survey Manager application is designed to create, manage, and respond to sur
 
 ## Architecture
 
-![Architecture Diagram](./ERD/survey_manager_db.png)
+![DataBase Diagram](./ERD/survey_manager_db.png)
 
 *Note: This application uses a modular monolithic architecture for simplicity and ease of management while maintaining clear separation of concerns.*
 
@@ -20,7 +20,8 @@ The Survey Manager application is designed to create, manage, and respond to sur
 
 - **Survey Endpoints**: Endpoints to create, update, and delete surveys.
 - **Response Endpoints**: Endpoints for users to submit and view responses.
-- API Documentation is available via [Swagger], check: "[.../docs]".
+- **Auth Endpoints**: Endpoints for user registration and login.
+- API Documentation is available via Swagger, check: ".../docs".
 
 ## Repositories
 
