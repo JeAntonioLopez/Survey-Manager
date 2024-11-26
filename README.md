@@ -23,11 +23,6 @@ The Survey Manager application is designed to create, manage, and respond to sur
 - **Auth Endpoints**: Endpoints for user registration and login.
 - API Documentation is available via Swagger, check: ".../docs".
 
-## Repositories
-
-- **Survey Manager**: The core backend repository for managing surveys and responses.
-- **Front-end (Optional)**: Integration-ready with various front-end technologies for user interfaces.
-
 ## License
 
 This project is licensed under the MIT License.
